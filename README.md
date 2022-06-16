@@ -1,6 +1,6 @@
 # Audio Parser
 
-This is a C++ implementation of a program to parse the content of .wav file.
+This is a C++ implementation of a program to parse the content of .wav file and print the information stored in its header.
 
 .wav files are RIFF files (Resource Interchange File Format) which start out with a header followed by a sequence of data chunks.
 
