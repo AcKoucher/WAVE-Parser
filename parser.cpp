@@ -3,7 +3,7 @@
 #include <vector>
 #include <fstream>
 
-struct Header
+struct Riff
 {
 	unsigned char	chunkID[4];
 	unsigned int	chunkSize;
@@ -23,15 +23,15 @@ struct Header
 	std::vector<unsigned char> audio;
 };
 
-bool RiffChecker(Header& header)
+bool RiffChecker(Riff& input)
 {
-	if (header.chunkID[0] != 'R' && header.chunkID[1] != 'I' && header.chunkID[2] != 'F' && header.chunkID[3] != 'F')
+	if (input.chunkID[0] != 'R' && input.chunkID[1] != 'I' && input.chunkID[2] != 'F' && input.chunkID[3] != 'F')
 		return false;
 	else
 		return true;
 }
 
-void PrintHeader(Header& parsedHeader)
+void PrintHeader(Riff& parsedHeader)
 {
 	std::cout << "Chunk ID: ";
 	std::cout << parsedHeader.chunkID[0];
@@ -95,55 +95,55 @@ int main()
 	unsigned char audioByte;
 	unsigned char extraParamByte;
 	std::string filePath;
-	Header fileHeader;
+	Riff fileChunks;
 	bool checksRiff;
 
 	Initialize(filePath);
 
 	std::ifstream file(filePath, std::ios::binary);
 
-	file.read((char*)&fileHeader.chunkID, 4);
+	file.read((char*)&fileChunks.chunkID, 4);
 
-	checksRiff = RiffChecker(fileHeader);
+	checksRiff = RiffChecker(fileChunks);
 	if (!checksRiff)
 	{
 		std::cout << "[ERROR]: The file you are trying to parse is not a RIFF file or the path is invalid!" << std::endl;
 		return EXIT_FAILURE;
 	}
 
-	file.read((char*)&fileHeader.chunkSize, 4);
-	file.read((char*)&fileHeader.format, 4);
+	file.read((char*)&fileChunks.chunkSize, 4);
+	file.read((char*)&fileChunks.format, 4);
 
-	file.read((char*)&fileHeader.subChunkOneID, 4);
-	file.read((char*)&fileHeader.subChunkOneSize, 4);
-	file.read((char*)&fileHeader.audioFormat, 2);
-	file.read((char*)&fileHeader.numChannels, 2);
-	file.read((char*)&fileHeader.sampleRate, 4);
-	file.read((char*)&fileHeader.byteRate, 4);
-	file.read((char*)&fileHeader.blockAlign, 2);
-	file.read((char*)&fileHeader.bitPerSample, 2);
+	file.read((char*)&fileChunks.subChunkOneID, 4);
+	file.read((char*)&fileChunks.subChunkOneSize, 4);
+	file.read((char*)&fileChunks.audioFormat, 2);
+	file.read((char*)&fileChunks.numChannels, 2);
+	file.read((char*)&fileChunks.sampleRate, 4);
+	file.read((char*)&fileChunks.byteRate, 4);
+	file.read((char*)&fileChunks.blockAlign, 2);
+	file.read((char*)&fileChunks.bitPerSample, 2);
 
-	if (fileHeader.subChunkOneSize > 16)
+	if (fileChunks.subChunkOneSize > 16)
 	{
-		file.read((char*)&fileHeader.extraParamSize, 2);
+		file.read((char*)&fileChunks.extraParamSize, 2);
 
-		for (int i = 0; i < fileHeader.extraParamSize; i++)
+		for (int i = 0; i < fileChunks.extraParamSize; i++)
 		{
 			file.read((char*)&extraParamByte, 1);
-			fileHeader.extraParam.push_back(extraParamByte);
+			fileChunks.extraParam.push_back(extraParamByte);
 		}
 	}
 
-	file.read((char*)&fileHeader.subChunkTwoID, 4);
-	file.read((char*)&fileHeader.subChunkTwoSize, 4);
+	file.read((char*)&fileChunks.subChunkTwoID, 4);
+	file.read((char*)&fileChunks.subChunkTwoSize, 4);
 
-	for (int j = 0; j < fileHeader.subChunkTwoSize; j++)
+	for (int j = 0; j < fileChunks.subChunkTwoSize; j++)
 	{
 		file.read((char*)&audioByte, 1);
-		fileHeader.audio.push_back(audioByte);
+		fileChunks.audio.push_back(audioByte);
 	}
 
-	PrintHeader(fileHeader);
+	PrintHeader(fileChunks);
 
 	std::cin.get();
 }
