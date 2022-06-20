@@ -1,4 +1,4 @@
-# Audio Parser
+# Audio Header Parser
 
 This is a C++ implementation of a program to parse the content of .wav file and print the information stored in its header.
 
